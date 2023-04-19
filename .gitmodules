@@ -1,0 +1,6 @@
+[submodule "practice-works-backend"]
+	path = practice-works-backend
+	url = ../practice-works-backend.git
+[submodule "practice-works-frontend"]
+	path = practice-works-frontend
+	url = ../practice-works-frontend.git
