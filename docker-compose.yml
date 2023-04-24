@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+    proxy:
+        build:
+            context: ./proxy
+
+    redis:
+        image: redis:6.2-alpine
+        command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD?Require redis app password REDIS_PASSWORD} --maxmemory 256M
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200k"
+                max-file: "10"
+    backend:
+        build:
+            context: ./practice-works-backend
+    frontend:
+        build:
+            context: ./practice-works-frontend
+            args:
+                NX_API_URL: ${NX_API_URL}
