@@ -16,6 +16,14 @@ services:
     backend:
         build:
             context: ./practice-works-backend
+        environment:
+            DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
+            DB_APPLICATION_NAME: ${DB_APPLICATION_NAME}
+            SERVICE_BASE_PATH: ${SERVICE_BASE_PATH}
+            JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
+            JWT_REFRESH_TOKEN_EXPIRE_DAYS: ${JWT_REFRESH_TOKEN_EXPIRE_DAYS}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
     frontend:
         build:
             context: ./practice-works-frontend
