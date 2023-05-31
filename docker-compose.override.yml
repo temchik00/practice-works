@@ -33,5 +33,6 @@ services:
         build:
             args:
                 NX_API_URL: ${NX_API_URL}
+                NX_TELEGRAM_DISCUSSION: ${NX_TELEGRAM_DISCUSSION}
         depends_on:
             - backend

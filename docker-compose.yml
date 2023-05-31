@@ -29,3 +29,4 @@ services:
             context: ./practice-works-frontend
             args:
                 NX_API_URL: ${NX_API_URL}
+                NX_TELEGRAM_DISCUSSION: ${NX_TELEGRAM_DISCUSSION}
