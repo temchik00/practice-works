@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+    backend:
+        environment:
+            DB_CONNECTION_STRING: "postgresql+psycopg2://postgres:postgres@postgres:5432/art_back"
+            JWT_PRIVATE_KEY: /backend/secret/jwt-key
+            JWT_PUBLIC_KEY: /backend/secret/jwt-key.pub
+
+            DEBUG: "false"
+        depends_on:
+            - redis
+    proxy:
+        build: proxy
+        ports:
+            - "80:80"
+    frontend:
+        build:
+            args:
+                NX_API_URL: ${NX_API_URL}
+                NX_TELEGRAM_DISCUSSION: ${NX_TELEGRAM_DISCUSSION}
+        depends_on:
+            - backend
