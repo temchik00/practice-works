@@ -1,23 +1,54 @@
 version: "3.8"
 
 services:
+    redis:
+        image: redis:6.2-alpine
+        command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD?Require redis app password REDIS_PASSWORD} --maxmemory 256M
+        networks:
+            - redis
     backend:
+        image: ghcr.io/temchik00/practice-works/backend
         environment:
-            DB_CONNECTION_STRING: "postgresql+psycopg2://postgres:postgres@postgres:5432/art_back"
-            JWT_PRIVATE_KEY: /backend/secret/jwt-key
-            JWT_PUBLIC_KEY: /backend/secret/jwt-key.pub
-
+            DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
+            DB_APPLICATION_NAME: ${DB_APPLICATION_NAME}
+            SERVICE_BASE_PATH: ${SERVICE_BASE_PATH}
+            JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
+            JWT_REFRESH_TOKEN_EXPIRE_DAYS: ${JWT_REFRESH_TOKEN_EXPIRE_DAYS}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            JWT_PRIVATE_KEY: /run/secrets/jwt_private_key
+            JWT_PUBLIC_KEY: /run/secrets/jwt_public_key
             DEBUG: "false"
-        depends_on:
+        secrets:
+            - jwt_private_key
+            - jwt_public_key
+        networks:
+            - proxy
+            - database
             - redis
     proxy:
-        build: proxy
+        image: ghcr.io/temchik00/practice-works/proxy
         ports:
             - "80:80"
+        networks:
+            - proxy
     frontend:
-        build:
-            args:
-                NX_API_URL: ${NX_API_URL}
-                NX_TELEGRAM_DISCUSSION: ${NX_TELEGRAM_DISCUSSION}
-        depends_on:
-            - backend
+        image: ghcr.io/temchik00/practice-works/frontend
+        networks:
+            - proxy
+networks:
+    database:
+        name: database_network
+        external: true
+    proxy:
+        name: proxy_network
+        driver: overlay
+    redis:
+        name: redis_network
+        driver: overlay
+
+secrets:
+    jwt_private_key:
+        file: ${JWT_PRIVATE_KEY_LOCATION?Provide jwt private key file location JWT_PRIVATE_KEY_LOCATION}
+    jwt_public_key:
+        file: ${JWT_PUBLIC_KEY_LOCATION?Provide jwt public key file location JWT_PUBLIC_KEY_LOCATION}
